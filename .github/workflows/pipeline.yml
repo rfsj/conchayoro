@@ -1,9 +1,23 @@
 name: conchayoro-pipeline
 on:
-  workflow_dispatch
+  push:
+    branches: [ "main" ]
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: executa comando
-        run: echo "Configuração inicial do pipeline"
+    - uses: actions/checkout@v3
+    - name: setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    - name: frontend install
+      run: npm --prefix frontend install
+    - name: frontend build
+      run: npm --prefix frontend run build
+    - name: upload frontend build
+      uses: actions/upload-artifact@v3
+      with:
+        name: build
+        path: frontend/.next/server/app
